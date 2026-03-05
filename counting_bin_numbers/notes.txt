@@ -10,8 +10,5 @@ _t: Just a naming convention meaning "type".
 
 - the concept of endiannes (byte order), different processor architectures store the MSB first, other archs store the MSB last. I understand that we will need to make an assumption or orchestrate the algorithm to identify somehow the processor architecture.
 
-- Python's dynamic int type is dynamic 
-because it allocates a different number 
-of bytes for each respective number (from 28 bytes and up). 
-This breaks the operation of reading and storing numbers
- in a binary file natively. 
+Current performance time: 
+- 52.26 seconds

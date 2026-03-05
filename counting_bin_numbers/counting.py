@@ -6,14 +6,12 @@ Commonly used in programming, UInt32 is ideal for scenarios requiring a wide ran
 Its unsigned nature eliminates the need to account for negative numbers in calculations, streamlining logic and efficient memory use, 
 especially in applications focused on hardware performance or large datasets.
 
-
 Naming convention of uint32_t
 u: Unsigned. This means there are no negative numbers. The value starts at 0.
 int: Integer.
 32: It occupies exactly 32 bits of memory. Since 1 byte is 8 bits, this means every single number takes up exactly 4 bytes.
 _t: Just a naming convention meaning "type".
 Each number in the range of 0 to 4,294,967,295. One number takes exactly 4 bytes of memory.
-
 
 Python's standard int type is dynamic, from 28 bytes or more. 
 This introduces memory overhead compared to fixed-size types like UInt32.
@@ -73,7 +71,6 @@ def process_billion_integers(file_path):
                 break  # End of file
             
             # Calculate how many integers are in this chunk
-            # (The last chunk might be smaller than 4MB)
             num_ints = len(chunk) // 4
             
             # Unpack raw bytes into Python integers (< means Little-Endian, I means uint32)
@@ -94,7 +91,7 @@ def process_billion_integers(file_path):
 
     print(f"File reading and bitset population took: {time.time() - start_time:.2f} seconds")
     
-    print("Counting bits... (This might take a moment)")
+    print("Counting bits...")
     counting_start = time.time()
     
     # Calculate the results by counting the '1' bits in our arrays
@@ -114,8 +111,6 @@ def process_billion_integers(file_path):
     return unique_count, seen_only_once
 
 if __name__ == "__main__":
-    # For testing, you will need to generate a dummy binary file, 
-    # or point this to the actual file if you have it!
     test_file = "test_data.bin"
     
     if os.path.exists(test_file):
@@ -125,6 +120,3 @@ if __name__ == "__main__":
         print(f"Task 1b (Seen exactly once):     {only_once}")
     else:
         print(f"File '{test_file}' not found. Please provide the binary file.")
-
-
-
