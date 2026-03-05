@@ -1,0 +1,17 @@
+ - naming convention of uint32_t
+u: Unsigned. This means there are no negative numbers. 
+    The value starts at 0.
+int: Integer.
+32: It occupies exactly 32 bits of memory.
+     Since 1 byte is 8 bits, this means every single number takes up exactly 4 bytes.
+_t: Just a naming convention meaning "type".
+
+- each number is stored as 4 bytes or 32 bits
+
+- the concept of endiannes (byte order), different processor architectures store the MSB first, other archs store the MSB last. I understand that we will need to make an assumption or orchestrate the algorithm to identify somehow the processor architecture.
+
+- Python's dynamic int type is dynamic 
+because it allocates a different number 
+of bytes for each respective number (from 28 bytes and up). 
+This breaks the operation of reading and storing numbers
+ in a binary file natively. 
