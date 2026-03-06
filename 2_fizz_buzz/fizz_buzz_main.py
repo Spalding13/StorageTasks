@@ -8,8 +8,6 @@ The catch is that you can't use any conditionals or loops :)
 """
 
 def branchless_fizzbuzz(n=1):
-    
-
     # Use tuples because they are immutable and more memory efficient than lists.
     # on the right side we have index evaluation, which is O(1) and does not involve branching.
     part_a = ("A", "", "")[n % 3]

@@ -1,2 +1,4 @@
 # Ignore test_data.bin in any directory
 **/test_data.bin
+# Ignore bigf.json.bz2 in any directory from the third task
+**/bigf.json.bz2
