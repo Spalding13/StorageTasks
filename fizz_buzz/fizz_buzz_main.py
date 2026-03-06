@@ -7,12 +7,24 @@ and for multiples of both 3 and 5 print "AB" instead of the number.
 The catch is that you can't use any conditionals or loops :)
 """
 
-def fizz_buzz(n=1):
-    div_by_3 = "A" * (not (n % 3))
-    div_by_5 = "B" * (not (n % 5))
+def branchless_fizzbuzz(n=1):
     
-    print((div_by_3 + div_by_5) or n)
-    
-    (n < 100) and fizz_buzz(n + 1)
 
-fizz_buzz()
+    # Use tuples because they are immutable and more memory efficient than lists.
+    # on the right side we have index evaluation, which is O(1) and does not involve branching.
+    part_a = ("A", "", "")[n % 3]
+    part_b = ("B", "", "", "", "")[n % 5]
+    combined = part_a + part_b
+    
+    # Same technique as above: Branchless fallback using boolean casting as an integer index
+    # An empty string "" is Fals, which is the integer 0
+    # A non-empty string like "A", "B", or "AB" is True, which is the integer 1.
+    result = (str(n), combined)[bool(combined)]
+    print(result)
+    
+    # Same technique as above: Branchless recursion using boolean casting as an integer index
+    dispatch = (lambda x: None, branchless_fizzbuzz)
+    dispatch[n < 100](n + 1)
+
+if __name__ == "__main__":
+    branchless_fizzbuzz()
