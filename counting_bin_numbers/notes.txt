@@ -12,3 +12,5 @@ _t: Just a naming convention meaning "type".
 
 Current performance time: 
 - 52.26 seconds
+Optimized performance time:
+- 1.19 seconds
