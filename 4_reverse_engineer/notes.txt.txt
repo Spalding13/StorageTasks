@@ -1,0 +1,16 @@
+1. If you're on Windows, set up and open WSL and cd to the binaries.
+
+2. Inspect the files:
+file b
+a: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), statically linked, for GNU/Linux 3.2.0, BuildID[sha1]=f78fa493787cd1a399b33b8c872299feabab709c, stripped
+b: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), statically linked, for GNU/Linux 2.6.32, BuildID[sha1]=cffb08c07ba5e0fcd6c0860760955dab0b8c1707, stripped
+
+3. Extract any text you can using strings. Most of the text is gibberish but it may reveal comments or 
+anything that may indicate how the binary crashed.
+strings a/b >> a/b_strings_trace.txt
+
+4. Lets analyze the results and start with a:
+
+The binary a contains a check for the host's kernel version, the Kernel was too old for the 
+target machine, as evidenced by "FATAL: cannot determine kernel version"
+
