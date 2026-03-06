@@ -48,9 +48,9 @@ This becomes >> 3 (which is the same as dividing by 8).
 Modulo becomes & 7 (which is the same as modulo 8).
 """
 
-import struct
 import os
 import time
+import array # OPTIMIZATION 1: Replaced struct with array
 
 def process_billion_integers(file_path):
     print(f"Allocating bitsets (1GB total)...")
@@ -58,25 +58,25 @@ def process_billion_integers(file_path):
     seen_at_least_once = bytearray(1 << 29)
     seen_multiple = bytearray(1 << 29)
     
-    # Read 4MB at a time (1,000,000 integers per chunk)
-    chunk_size = 4_000_000 
-    
     print(f"Processing file: {file_path}")
     start_time = time.time()
     
     with open(file_path, 'rb') as f:
         while True:
-            chunk = f.read(chunk_size)
+            # Create an empty C-style array of unsigned 32-bit integers ('I')
+            chunk = array.array('I')
+            
+            try:
+                # Read exactly 1,000,000 integers straight from the file into the array
+                chunk.fromfile(f, 1_000_000)
+            except EOFError:
+                # This safely catches the end of the file when less than 1M ints remain
+                pass
+            
             if not chunk:
                 break  # End of file
             
-            # Calculate how many integers are in this chunk
-            num_ints = len(chunk) // 4
-            
-            # Unpack raw bytes into Python integers (< means Little-Endian, I means uint32)
-            numbers = struct.unpack(f'<{num_ints}I', chunk)
-            
-            for num in numbers:
+            for num in chunk:
                 byte_index = num >> 3   # num // 8
                 bit_offset = num & 7    # num % 8
                 mask = 1 << bit_offset
@@ -91,18 +91,12 @@ def process_billion_integers(file_path):
 
     print(f"File reading and bitset population took: {time.time() - start_time:.2f} seconds")
     
-    print("Counting bits...")
+    print("Counting bits... (Using C-level execution)")
     counting_start = time.time()
     
-    # Calculate the results by counting the '1' bits in our arrays
-    unique_count = 0
-    multiple_count = 0
-    
-    # Iterate through every byte in the 512MB arrays to count the 1s
-    for i in range(len(seen_at_least_once)):
-        # .bit_count() counts how many '1's are in a binary number (Python 3.10+)
-        unique_count += seen_at_least_once[i].bit_count()
-        multiple_count += seen_multiple[i].bit_count()
+    # OPTIMIZATION 2: Calculate the results by counting bits at the C level
+    unique_count = int.from_bytes(seen_at_least_once, byteorder='little').bit_count()
+    multiple_count = int.from_bytes(seen_multiple, byteorder='little').bit_count()
         
     seen_only_once = unique_count - multiple_count
     
