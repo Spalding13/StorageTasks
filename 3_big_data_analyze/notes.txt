@@ -1,0 +1,42 @@
+1. Analyze the JSON contents at a glance:
+""
+[{"id":0,"model":"RDV2","serial":"HD92731454"},
+{"id":1,"model":"DRV1","serial":"HD78784271"},
+{"id":2,"model":"SSDLP2","serial":"HD74286234"},
+{"id":3,"model":"SSDF1","serial":"HD18368977"},
+{"id":4,"model":"123456789","serial":"HD71847139"},
+{"id":5,"model":"HGST2048T","serial":"HD60894593"},
+{"id":6,"model":"DRV1","serial":"HD61514441"},
+{"id":7,"model":"DSD07461","serial":"HD69247082"},
+{"id":8,"model":"broken","serial":"HD30186042"},
+{"id":9,"model":"broken","serial":"HD46171584"},{"id":10,"model":" 
+""
+
+File decompressed file is around 15GBs, which is one single, massive JSON array, trying to load and loop the file contents will result 
+in OOM error. Therefore, I need to use iterative JSON parsing -- instead of reading the file as a string,
+read a stream of tokens, assemble one dict at a time, count and instantly destroy it to free memory. This can be done using ijson, and 
+Counter from the collections module because it’s memory-efficient for this purpose, since you only store counts for unique models, not all disk objects.
+
+2. The stream protects us from the volume of the data (the sheer number of rows), 
+the Counter object is vulnerable to the cardinality of the data (the number of unique values).
+
+3. Can't use multithreading because of GIL, because of the bz2 squential compression algorithm.
+
+4. Here are the results, interestingly there is one superfluous record named MODEL:
+
+--- FINAL RESULTS ---
+Total Unique Models Found: 13
+------------------------------
+Model: SSDLP2          Count: 33,345,174
+Model: DRV1            Count: 33,338,513
+Model: HGST8T          Count: 33,337,967
+Model: HGST3T          Count: 33,337,292
+Model: DSD07461        Count: 33,333,959
+Model: RDV2            Count: 33,332,954
+Model: HGST2048T       Count: 33,332,531
+Model: SCSI3HD         Count: 33,329,611
+Model: broken          Count: 33,328,584
+Model: SSDF1           Count: 33,328,579
+Model: SSDDC1          Count: 33,327,742
+Model: 123456789       Count: 33,327,094
+Model: MODEL           Count: 1
