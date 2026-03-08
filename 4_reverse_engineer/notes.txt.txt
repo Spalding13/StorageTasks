@@ -14,3 +14,46 @@ strings a/b >> a/b_strings_trace.txt
 The binary a contains a check for the host's kernel version, the Kernel was too old for the 
 target machine, as evidenced by "FATAL: cannot determine kernel version"
 
+5. Lets analyze with 
+Using strace utility I found that:
+Binary a attempts to open a file named pesho in my machine.
+Then, the program takes the file descriptor (in this case -1) 
+to read from it.
+
+Lets try to create a file pesho and see what the program does:
+echo "testdata" > pesho
+And Try to run strace again.
+
+After running "a" with strace I see that the program crashes due to a
+unsuccesfful malloc call, when the program tries to allocate more memory.
+
+Lets try with ltrace. The output suggests that the program is statically linked or 
+stripped of it's stripped of function names.
+
+Lets try to create pesho file with different symbols. It seems that MINSIZE has a minimum of 32 bytes
+I fed pesho with a bunch of Cyrillic А symbols and ran the program again with strace.
+The output suggests that if the file is larger than MINSIZE, it will loop through the file
+byte by byte and print the index and the signed integer value of that specific byte.
+
+The source code my look like:
+int fd = open("./pesho", O_RDONLY);
+int bytes_read = read(fd, buffer, 1024);
+close(fd);
+
+for (int i = 0; i < bytes_read; i++) {
+    printf("%d %d\n", i, (char)buffer[i]);
+}
+
+
+Let's look at b with strace. What we find suspicious is:
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=NULL} ---
+The program is trying to read or write through a NULL pointer.
+
+
+After debugging with gdb and traversing the assembly instructions, I identified that the program makes a call to
+the function env_var(). Need to figure out which the name of the environment variable necessary.
+We found the name of the environment variable called - TMPDIR.
+I ran the program with TMPDIR="/this/path/has/four/slashes/" ./b and its asking for a password.
+Tried looking for it in the strings output, its not there.
+I managed to use the debugger and go through the registers and found this: mnogoslozhnaparolaamanainstina
+
