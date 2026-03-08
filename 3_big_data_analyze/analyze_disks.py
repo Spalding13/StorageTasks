@@ -42,7 +42,7 @@ def analyze_disks(filepath):
     return model_counts
 
 if __name__ == "__main__":
-    url = "***REMOVED***"
+    url = ""
     file_name = "bigf.json.bz2"
     
     # Uncomment to download if needed
