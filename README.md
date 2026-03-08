@@ -1,4 +1,4 @@
-[Storage-Tasks Project]
+# Storage-Tasks Project
 
 This repository contains four main folders, each dedicated to a specific data processing or algorithmic task. Below you'll find descriptions and instructions for each section.
 
@@ -60,6 +60,33 @@ Efficiently analyze massive compressed JSON arrays (16+ GB) using iterative stre
 1. (Optional) Download the data file using wget or the built-in Python function
 2. Run the analysis:
    python determine_structure.py
+
+
+## 4. Reverse Engineering Binaries
+
+### Purpose
+Analyze and exploit undocumented, stripped, and statically linked Linux binaries. This module covers dynamic syscall tracing, diagnosing memory corruption (buffer overflows and NULL pointer dereferences), manipulating environment variables, and defeating custom XOR-based cryptographic ciphers using raw assembly debugging.
+
+### Files
+
+- a: A binary that parses files byte-by-byte but suffers from buffer overflow and missing file error handling.
+- b: A binary protected by a hidden environment variable check and a custom XOR password cipher.
+- *_strings_trace.txt: Extracted strings from the binaries for static analysis.
+
+### Necessary Tools
+
+- Linux Environment (Native or WSL)
+- file & strings (for static analysis and metadata extraction)
+- strace (for tracing system calls and signals like SIGSEGV)
+- gdb (GNU Debugger, for dynamic analysis, memory inspection, and breakpoint trapping)
+
+### Instructions
+
+1. Inspect the binaries statically: `file ./b` and `strings ./b > b_strings_trace.txt`
+2. Trace system calls to identify missing file dependencies or immediate crashes: `strace ./a` or `strace ./b`
+3. Use GDB to debug SIGSEGV crashes: trace the Instruction Pointer ($rip) and examine memory addresses (`x/s`) to find hidden environment variable requirements (e.g., TMPDIR).
+4. Bypass environment checks and trap the program at comparison loops using GDB breakpoints (`break *0x...`).
+5. Dump encrypted memory arrays (`x/30xb $rbp-0x50`) and reverse the math (XOR) to recover plaintext passwords.
 
 ---
 
